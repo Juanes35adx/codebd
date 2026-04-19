@@ -6,6 +6,9 @@ import FaqsPage from "../pages/FaqsPage";
 import Mapa from "../pages/Mapa";
 import Register from "../pages/Register";
 import ProtectedRoute from "./ProtectedRoute";
+import ForoPage from "../pages/ForoPage";
+
+
 
 export default function AppRouter() {
   return (
@@ -16,6 +19,7 @@ export default function AppRouter() {
       <Route path="/faqs" element={<ProtectedRoute><FaqsPage /></ProtectedRoute>} />
       <Route path="/mapa" element={<ProtectedRoute><Mapa /></ProtectedRoute>} />
       <Route path="/register" element={<Register />} />
+      <Route path="/foro" element={<ProtectedRoute><ForoPage /></ProtectedRoute>} />
     </Routes>
   );
 }

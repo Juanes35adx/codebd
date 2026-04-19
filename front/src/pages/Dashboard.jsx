@@ -13,6 +13,7 @@ export default function Dashboard() {
     { label: "🗺️ Mapa del Campus", ruta: "/mapa" },
     { label: "👨‍🏫 Profesores", ruta: "/profesores" },
     { label: "❓ Preguntas Frecuentes", ruta: "/faqs" },
+    { label: "💬 Foro Comunitario", ruta: "/foro" },
   ];
 
   return (
@@ -39,7 +40,7 @@ const styles = {
   title: { fontSize: "1.8rem", fontWeight: 500, margin: 0 },
   subtitle: { color: "#888", fontSize: "15px", marginBottom: "2rem" },
   logout: { background: "none", border: "1px solid #ccc", borderRadius: "8px", padding: "8px 16px", cursor: "pointer", fontSize: "14px" },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" },
-  card: { backgroundColor: "#fff", border: "1px solid #e0e0e0", borderRadius: "12px", padding: "2rem", cursor: "pointer", textAlign: "center", transition: "box-shadow 0.2s" },
+  grid: { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" },
+  card: { backgroundColor: "#fff", border: "1px solid #e0e0e0", borderRadius: "12px", padding: "2rem", cursor: "pointer", textAlign: "center", minHeight: "120px", display: "flex", alignItems: "center", justifyContent: "center" },
   cardLabel: { fontSize: "16px", fontWeight: 500 },
 };
