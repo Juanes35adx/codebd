@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getPosts, createPost, getRespuestas, createRespuesta, deletePost, deleteRespuesta } from "../services/foro.service";
+import { getPosts, createPost, getRespuestas, createRespuesta, deleteRespuesta } from "../services/foro.service";
+import Layout from "../components/organisms/Layout";
 
 export default function ForoPage() {
   const [posts, setPosts] = useState([]);
@@ -10,7 +10,6 @@ export default function ForoPage() {
   const [respuestas, setRespuestas] = useState([]);
   const [respuesta, setRespuesta] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getPosts().then(setPosts).finally(() => setLoading(false));
@@ -38,113 +37,106 @@ export default function ForoPage() {
     getRespuestas(postSeleccionado.post_id).then(setRespuestas);
   };
 
-  const handleEliminarPost = async (e, postId) => {
-    e.stopPropagation();
-    await deletePost(postId);
-    getPosts().then(setPosts);
-    if (postSeleccionado?.post_id === postId) setPostSeleccionado(null);
-  };
-
   const handleEliminarRespuesta = async (respuestaId) => {
     await deleteRespuesta(respuestaId);
     getRespuestas(postSeleccionado.post_id).then(setRespuestas);
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.left}>
-        <button onClick={() => navigate("/dashboard")} style={styles.back}>← Volver</button>
-        <h2 style={styles.title}>Foro Comunitario</h2>
-        <p style={styles.subtitle}>Publica dudas para que la comunidad UPB te responda.</p>
+    <Layout>
+      <h2 style={styles.title}>Bienvenido al Foro Comunitario</h2>
+      <p style={styles.subtitle}>Aquí podrás publicar dudas generales que tengas para que la comunidad UPB te responda.</p>
 
-        <form onSubmit={handleCrearPost} style={styles.form}>
-          <input
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            placeholder="Título de tu pregunta"
-            style={styles.input}
-            required
-          />
-          <textarea
-            value={contenido}
-            onChange={(e) => setContenido(e.target.value)}
-            placeholder="Describe tu duda..."
-            style={styles.textarea}
-            required
-          />
-          <button type="submit" style={styles.btn}>Publicar</button>
-        </form>
+      <div style={styles.banner}>📚 Estudiantes UPB</div>
 
-        <div style={styles.lista}>
-          {loading ? <p>Cargando...</p> : posts.map((p) => (
-            <div key={p.post_id} onClick={() => handleVerPost(p)} style={styles.postCard}>
-              <div style={styles.avatar}>{p.profiles?.full_name?.charAt(0) || "?"}</div>
-              <div style={{ flex: 1 }}>
-                <p style={styles.postTitulo}>{p.titulo}</p>
-                <p style={styles.postMeta}>{p.profiles?.full_name} · {new Date(p.fecha).toLocaleDateString()}</p>
-              </div>
-              <button onClick={(e) => handleEliminarPost(e, p.post_id)} style={styles.btnEliminar}>✕</button>
-            </div>
-          ))}
-        </div>
+      <div style={styles.recuerda}>
+        <h3 style={styles.recuerdaTitle}>Recuerda que....</h3>
+        <p style={styles.recuerdaText}>Ante toda duda puedes también utilizar el medio de preguntas frecuentes en el cual puedes preguntar directamente a la asesoría integral.</p>
       </div>
 
-      {postSeleccionado && (
-        <div style={styles.right}>
-          <button onClick={() => setPostSeleccionado(null)} style={styles.cerrar}>✕</button>
-          <h3 style={styles.postTituloDetalle}>{postSeleccionado.titulo}</h3>
-          <p style={styles.postMeta}>{postSeleccionado.profiles?.full_name} · {new Date(postSeleccionado.fecha).toLocaleDateString()}</p>
-          <p style={styles.postContenido}>{postSeleccionado.contenido}</p>
+      <form onSubmit={handleCrearPost} style={styles.form}>
+        <input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Título de tu pregunta" style={styles.input} required />
+        <textarea value={contenido} onChange={(e) => setContenido(e.target.value)} placeholder="Describe tu duda..." style={styles.textarea} required />
+        <button type="submit" style={styles.btnPublicar}>Publicar</button>
+      </form>
 
-          <h4 style={styles.respuestasTitle}>Respuestas</h4>
-          <div style={styles.respuestasList}>
-            {respuestas.length === 0
-              ? <p style={styles.sinResp}>Sé el primero en responder.</p>
-              : respuestas.map((r) => (
-                <div key={r.respuesta_id} style={styles.respuestaCard}>
-                  <div style={styles.avatar}>{r.profiles?.full_name?.charAt(0) || "?"}</div>
-                  <div style={{ flex: 1 }}>
-                    <p style={styles.respTexto}>{r.contenido}</p>
-                    <p style={styles.postMeta}>{r.profiles?.full_name}</p>
-                  </div>
-                  <button onClick={() => handleEliminarRespuesta(r.respuesta_id)} style={styles.btnEliminar}>✕</button>
-                </div>
-              ))}
+      <div style={styles.lista}>
+        {loading ? <p>Cargando...</p> : posts.map((p) => (
+          <div key={p.post_id} style={styles.postCard}>
+            <div style={styles.avatar}>{p.profiles?.full_name?.charAt(0) || "?"}</div>
+            <div style={{ flex: 1 }}>
+              <p style={styles.postTitulo}>{p.titulo}</p>
+              <p style={styles.postMeta}>{p.profiles?.full_name}</p>
+              <button onClick={() => handleVerPost(p)} style={styles.btnResponder}>Responder</button>
+            </div>
           </div>
+        ))}
+      </div>
 
-          <form onSubmit={handleResponder} style={styles.respForm}>
-            <input
-              value={respuesta}
-              onChange={(e) => setRespuesta(e.target.value)}
-              placeholder="Escribe tu respuesta..."
-              style={styles.input}
-              required
-            />
-            <button type="submit" style={styles.btn}>Responder</button>
-          </form>
+      <button style={styles.btnMostrar}>Mostrar Más...</button>
+
+      {postSeleccionado && (
+        <div style={styles.modalOverlay} onClick={() => setPostSeleccionado(null)}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setPostSeleccionado(null)} style={styles.cerrar}>✕</button>
+            <div style={styles.modalHeader}>
+              <div style={styles.avatar}>{postSeleccionado.profiles?.full_name?.charAt(0) || "?"}</div>
+              <div>
+                <h3 style={styles.postTituloDetalle}>{postSeleccionado.titulo}</h3>
+                <p style={styles.postMeta}>{postSeleccionado.profiles?.full_name} · {new Date(postSeleccionado.fecha).toLocaleDateString()}</p>
+              </div>
+            </div>
+            <p style={styles.postContenido}>{postSeleccionado.contenido}</p>
+
+            <form onSubmit={handleResponder} style={styles.respForm}>
+              <textarea value={respuesta} onChange={(e) => setRespuesta(e.target.value)} placeholder="Escribir..." style={styles.textarea} required />
+              <button type="submit" style={styles.btnPublicar}>Publicar</button>
+            </form>
+
+            <h4 style={styles.respuestasTitle}>Respuestas</h4>
+            <div style={styles.respuestasList}>
+              {respuestas.length === 0
+                ? <p style={styles.sinResp}>Sé el primero en responder.</p>
+                : respuestas.map((r) => (
+                  <div key={r.respuesta_id} style={styles.respuestaCard}>
+                    <div style={styles.avatar}>{r.profiles?.full_name?.charAt(0) || "?"}</div>
+                    <div style={{ flex: 1 }}>
+                      <p style={styles.respTexto}>{r.contenido}</p>
+                      <p style={styles.postMeta}>{r.profiles?.full_name}</p>
+                    </div>
+                    <button onClick={() => handleEliminarRespuesta(r.respuesta_id)} style={styles.btnEliminar}>✕</button>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }
 
 const styles = {
-  page: { display: "flex", gap: "1.5rem", padding: "2rem", maxWidth: "1100px", margin: "0 auto" },
-  left: { flex: 1, display: "flex", flexDirection: "column", gap: "1rem" },
-  right: { width: "400px", backgroundColor: "#fff", border: "1px solid #e0e0e0", borderRadius: "12px", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem", position: "relative" },
-  back: { background: "none", border: "none", cursor: "pointer", fontSize: "14px", color: "#555", alignSelf: "flex-start" },
-  cerrar: { position: "absolute", top: "12px", right: "12px", background: "none", border: "none", fontSize: "18px", cursor: "pointer", color: "#888" },
-  title: { fontSize: "1.6rem", fontWeight: 500, margin: 0 },
-  subtitle: { fontSize: "13px", color: "#888", margin: 0 },
-  form: { display: "flex", flexDirection: "column", gap: "8px" },
+  title: { fontSize: "1.8rem", fontWeight: 700, margin: "0 0 8px 0" },
+  subtitle: { fontSize: "14px", color: "#555", margin: "0 0 1.5rem 0" },
+  banner: { backgroundColor: "#ddd", borderRadius: "12px", height: "160px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem", fontSize: "18px", color: "#888" },
+  recuerda: { marginBottom: "1.5rem" },
+  recuerdaTitle: { fontSize: "1.4rem", fontWeight: 700, margin: "0 0 8px 0" },
+  recuerdaText: { fontSize: "14px", color: "#555", margin: 0 },
+  form: { display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.5rem" },
   input: { padding: "10px 12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "14px", outline: "none" },
   textarea: { padding: "10px 12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "14px", outline: "none", minHeight: "80px", resize: "vertical" },
-  btn: { padding: "10px", borderRadius: "8px", border: "none", backgroundColor: "#111", color: "#fff", fontSize: "14px", fontWeight: 500, cursor: "pointer" },
-  lista: { display: "flex", flexDirection: "column", gap: "8px" },
-  postCard: { display: "flex", gap: "12px", alignItems: "center", padding: "12px", backgroundColor: "#fff", border: "1px solid #e0e0e0", borderRadius: "10px", cursor: "pointer" },
-  avatar: { width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 500, flexShrink: 0 },
-  postTitulo: { fontSize: "14px", fontWeight: 500, margin: 0 },
-  postMeta: { fontSize: "12px", color: "#888", margin: 0 },
+  btnPublicar: { padding: "10px 24px", borderRadius: "20px", border: "none", backgroundColor: "#e8003d", color: "#fff", fontSize: "14px", fontWeight: 500, cursor: "pointer", alignSelf: "flex-end" },
+  lista: { display: "flex", flexDirection: "column", gap: "12px", marginBottom: "1.5rem" },
+  postCard: { display: "flex", gap: "12px", alignItems: "center", padding: "16px", backgroundColor: "#e8e8e8", borderRadius: "10px" },
+  avatar: { width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#555", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: 500, flexShrink: 0 },
+  postTitulo: { fontSize: "15px", fontWeight: 500, margin: "0 0 4px 0" },
+  postMeta: { fontSize: "12px", color: "#888", margin: "0 0 8px 0" },
+  btnResponder: { padding: "6px 16px", borderRadius: "20px", border: "none", backgroundColor: "#111", color: "#fff", fontSize: "13px", cursor: "pointer" },
+  btnMostrar: { display: "block", margin: "0 auto", padding: "10px 32px", borderRadius: "20px", border: "none", backgroundColor: "#e8003d", color: "#fff", fontSize: "14px", fontWeight: 500, cursor: "pointer" },
+  modalOverlay: { position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 },
+  modal: { backgroundColor: "#fff", borderRadius: "16px", padding: "2rem", width: "90%", maxWidth: "580px", maxHeight: "80vh", overflowY: "auto", position: "relative", display: "flex", flexDirection: "column", gap: "1rem" },
+  modalHeader: { display: "flex", gap: "12px", alignItems: "flex-start" },
+  cerrar: { position: "absolute", top: "12px", right: "16px", background: "none", border: "none", fontSize: "20px", cursor: "pointer", color: "#888" },
   postTituloDetalle: { fontSize: "16px", fontWeight: 500, margin: 0 },
   postContenido: { fontSize: "14px", color: "#444", margin: 0 },
   respuestasTitle: { fontSize: "14px", fontWeight: 500, margin: 0 },
@@ -152,6 +144,6 @@ const styles = {
   respuestaCard: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "8px" },
   respTexto: { fontSize: "13px", margin: 0 },
   sinResp: { fontSize: "13px", color: "#888" },
-  respForm: { display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" },
+  respForm: { display: "flex", flexDirection: "column", gap: "8px" },
   btnEliminar: { background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "16px", flexShrink: 0 },
 };

@@ -1,11 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import Layout from "../components/organisms/Layout";
 
 export default function Mapa() {
-  const navigate = useNavigate();
-
   return (
-    <div style={styles.container}>
-      <button onClick={() => navigate("/dashboard")} style={styles.back}>← Volver</button>
+    <Layout>
       <h1 style={styles.title}>Mapa del Campus UPB</h1>
       <div style={styles.mapWrapper}>
         <iframe
@@ -18,13 +15,11 @@ export default function Mapa() {
           loading="lazy"
         />
       </div>
-    </div>
+    </Layout>
   );
 }
 
 const styles = {
-  container: { padding: "2rem", maxWidth: "900px", margin: "0 auto" },
-  back: { background: "none", border: "none", cursor: "pointer", fontSize: "14px", color: "#555", marginBottom: "1rem" },
   title: { fontSize: "1.8rem", fontWeight: 500, marginBottom: "1.5rem" },
   mapWrapper: { borderRadius: "12px", overflow: "hidden", border: "1px solid #e0e0e0" },
 };
